@@ -1,0 +1,34 @@
+package com.kmarine.fishing.payment;
+
+import com.kmarine.fishing.common.ApiResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/payments")
+@RequiredArgsConstructor
+public class PaymentController {
+
+    private final PaymentService paymentService;
+
+    // 결제 검증 (프론트 결제 완료 후 호출)
+    @PostMapping("/verify")
+    public ResponseEntity<ApiResponse<PaymentResponseDto.Info>> verify(
+            @AuthenticationPrincipal Long userId,
+            @Valid @RequestBody PaymentRequestDto.Verify request) {
+        return ResponseEntity.ok(
+                ApiResponse.ok(paymentService.verify(userId, request)));
+    }
+
+    // 환불
+    @PostMapping("/cancel")
+    public ResponseEntity<ApiResponse<Void>> cancel(
+            @AuthenticationPrincipal Long userId,
+            @Valid @RequestBody PaymentRequestDto.Cancel request) {
+        paymentService.cancel(userId, request);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+}
