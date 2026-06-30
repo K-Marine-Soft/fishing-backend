@@ -27,9 +27,9 @@ public class PostController {
     // 게시글 목록
     @GetMapping
     public ResponseEntity<ApiResponse<Page<PostResponseDto.Summary>>> getList(
-            @RequestParam(required = false) PostCategory category,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "category",required = false) PostCategory category,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
         return ResponseEntity.ok(
                 ApiResponse.ok(postService.getList(category, page, size)));
     }
@@ -37,10 +37,10 @@ public class PostController {
     // 게시글 검색
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<PostResponseDto.Summary>>> search(
-            @RequestParam(required = false) PostCategory category,
-            @RequestParam String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "category",required = false) PostCategory category,
+            @RequestParam("keyword") String keyword,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
         return ResponseEntity.ok(
                 ApiResponse.ok(postService.search(category, keyword, page, size)));
     }

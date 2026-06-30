@@ -50,10 +50,13 @@ public class VesselRequestDto {
 
     @Getter
     public static class Search {
-        private String region;
+        private String     region;
         private VesselType type;
-        private Integer minPassengers;
-        private Integer maxPrice;
-        private String option;
+        private Integer    minPassengers;
+        private Integer    maxPrice;
+        private Integer    minPrice;      // ← 추가
+        private String     option;        // 편의시설 필터
+        private String     keyword;       // 선박명 검색 ← 추가
+        private String     sortBy;        // 정렬 기준 ← 추가
     }
 }

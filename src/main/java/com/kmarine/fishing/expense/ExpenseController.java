@@ -26,9 +26,9 @@ public class ExpenseController {
     // 월별 경비 조회
     @GetMapping("/monthly")
     public ResponseEntity<ApiResponse<ExpenseResponseDto.MonthlySummary>> monthly(
-            @RequestParam Long vesselId,
-            @RequestParam Integer year,
-            @RequestParam Integer month) {
+            @RequestParam("vesselId") Long vesselId,
+            @RequestParam("year") Integer year,
+            @RequestParam("month") Integer month) {
         return ResponseEntity.ok(
                 ApiResponse.ok(expenseService.getMonthlySummary(vesselId, year, month)));
     }
@@ -36,8 +36,8 @@ public class ExpenseController {
     // 전년/전전년 비교
     @GetMapping("/yearly-comparison")
     public ResponseEntity<ApiResponse<ExpenseResponseDto.YearlyComparison>> yearlyComparison(
-            @RequestParam Long vesselId,
-            @RequestParam Integer year) {
+            @RequestParam("vesselId") Long vesselId,
+            @RequestParam("year") Integer year) {
         return ResponseEntity.ok(
                 ApiResponse.ok(expenseService.getYearlyComparison(vesselId, year)));
     }
@@ -45,10 +45,10 @@ public class ExpenseController {
     // 매출/이익 분석
     @GetMapping("/sales-summary")
     public ResponseEntity<ApiResponse<ExpenseResponseDto.SalesSummary>> salesSummary(
-            @RequestParam Long vesselId,
-            @RequestParam String period,
-            @RequestParam Integer year,
-            @RequestParam Integer month) {
+            @RequestParam("vesselId") Long vesselId,
+            @RequestParam("period") String period,
+            @RequestParam("year") Integer year,
+            @RequestParam("month") Integer month) {
         return ResponseEntity.ok(
                 ApiResponse.ok(expenseService.getSalesSummary(
                         vesselId, period, year, month)));

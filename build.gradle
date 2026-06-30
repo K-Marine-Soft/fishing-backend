@@ -24,6 +24,12 @@ repositories {
 }
 
 dependencies {
+
+	// AWS S3
+	implementation platform('io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1')
+	
+	implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.1.1'
+	
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -47,14 +53,28 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+	// Firebase Admin SDK
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
+
     // DevTools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
+    
+	// WebSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }
 
+bootJar {
+    archiveFileName = 'fishing-backend-0.0.1-SNAPSHOT.jar'
+    enabled = true
+}
+
+jar {
+    enabled = false
+}
 
 tasks.named('test') {
 	useJUnitPlatform()

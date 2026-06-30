@@ -1,5 +1,7 @@
 package com.kmarine.fishing.reservation;
 
+import com.kmarine.fishing.config.FcmService;
+import com.kmarine.fishing.schedule.ScheduleService;
 import com.kmarine.fishing.user.User;
 import com.kmarine.fishing.user.UserRepository;
 import com.kmarine.fishing.vessel.Vessel;
@@ -18,7 +20,9 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final UserRepository        userRepository;
     private final VesselRepository      vesselRepository;
+    private final ScheduleService       scheduleService;
 
+    private final FcmService fcmService;
     // 예약 생성
     @Transactional
     public ReservationResponseDto.Detail create(Long userId,
@@ -28,6 +32,9 @@ public class ReservationService {
 
         Vessel vessel = vesselRepository.findById(request.getVesselId())
                 .orElseThrow(() -> new IllegalArgumentException("선박을 찾을 수 없습니다."));
+
+        scheduleService.validateDepartureAvailable(
+                vessel.getId(), request.getReservationDate());
 
         // 정원 초과 체크
         Integer reserved = reservationRepository
@@ -89,6 +96,20 @@ public class ReservationService {
         }
 
         reservation.cancel(request.getCancelReason());
+        
+     // cancel 메서드 내 취소 처리 후 추가
+        reservation.cancel(request.getCancelReason());
+
+        // 선주에게 취소 알림
+        if (reservation.getVessel().getOwner()
+                .getFcmToken() != null) {
+            fcmService.sendToToken(
+                reservation.getVessel().getOwner().getFcmToken(),
+                "예약 취소 알림",
+                reservation.getReservationDate() +
+                " 예약이 취소됐습니다."
+            );
+        }
     }
 
     // 선주 — 선박별 예약 목록

@@ -1,12 +1,16 @@
 package com.kmarine.fishing.vessel;
 
+import com.kmarine.fishing.schedule.ScheduleResponseDto;
+import com.kmarine.fishing.schedule.ScheduleService;
 import com.kmarine.fishing.user.User;
 import com.kmarine.fishing.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,6 +19,7 @@ public class VesselService {
 
     private final VesselRepository vesselRepository;
     private final UserRepository   userRepository;
+    private final ScheduleService  scheduleService;
 
     // 선박 등록
     @Transactional
@@ -70,6 +75,46 @@ public class VesselService {
 
     // 선박 검색
     @Transactional(readOnly = true)
+    public List<VesselResponseDto.Summary> search(
+            VesselRequestDto.Search request) {
+
+        List<Vessel> vessels = vesselRepository.search(
+                request.getRegion(),
+                request.getType(),
+                request.getMinPassengers(),
+                request.getMaxPrice(),
+                request.getMinPrice(),
+                request.getOption()
+        );
+
+        // 키워드 필터 (선박명)
+        if (request.getKeyword() != null
+                && !request.getKeyword().isBlank()) {
+            String keyword = request.getKeyword().toLowerCase();
+            vessels = vessels.stream()
+                    .filter(v -> v.getName().toLowerCase()
+                            .contains(keyword))
+                    .collect(Collectors.toList());
+        }
+
+        // 정렬
+        if ("price_asc".equals(request.getSortBy())) {
+            vessels.sort(Comparator.comparing(
+                    Vessel::getPricePerPerson));
+        } else if ("price_desc".equals(request.getSortBy())) {
+            vessels.sort(Comparator.comparing(
+                    Vessel::getPricePerPerson).reversed());
+        } else if ("passengers".equals(request.getSortBy())) {
+            vessels.sort(Comparator.comparing(
+                    Vessel::getMaxPassengers).reversed());
+        }
+
+        return vessels.stream()
+                .map(this::toSummary)
+                .collect(Collectors.toList());
+    }
+    /*
+    @Transactional(readOnly = true)
     public List<VesselResponseDto.Summary> search(VesselRequestDto.Search request) {
         return vesselRepository.search(
                 request.getRegion(),
@@ -77,7 +122,7 @@ public class VesselService {
                 request.getMinPassengers(),
                 request.getMaxPrice()
         ).stream().map(this::toSummary).collect(Collectors.toList());
-    }
+    }*/
 
     // 내 선박 목록 (선주)
     @Transactional(readOnly = true)
@@ -106,5 +151,11 @@ public class VesselService {
                 .latitude(vessel.getLatitude())
                 .longitude(vessel.getLongitude())
                 .build();
+    }
+    // 월별 예약 가능 날짜 조회 (하위 호환 — schedule API 위임)
+    @Transactional(readOnly = true)
+    public Map<String, ScheduleResponseDto> getAvailableDates(
+            Long vesselId, int year, int month) {
+        return scheduleService.getMonthlySchedule(vesselId, year, month);
     }
 }

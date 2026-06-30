@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -69,5 +70,50 @@ public class AdminController {
             @RequestParam(name = "status",required = false) SettlementStatus status) {
         return ResponseEntity.ok(
                 ApiResponse.ok(adminService.getSettlements(status)));
+    }
+    
+    
+ // 월별 매출 통계
+    @GetMapping("/stats/monthly")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>>
+            getMonthlySales(
+            @RequestParam(name = "year",
+                         defaultValue = "2026") int year) {
+        return ResponseEntity.ok(ApiResponse.ok(
+                adminService.getMonthlySalesStats(year)));
+    }
+
+    // 지역별 통계
+    @GetMapping("/stats/region")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>>
+            getRegionStats() {
+        return ResponseEntity.ok(ApiResponse.ok(
+                adminService.getRegionStats()));
+    }
+
+    // 선박 타입별 통계
+    @GetMapping("/stats/vessel-type")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>>
+            getVesselTypeStats() {
+        return ResponseEntity.ok(ApiResponse.ok(
+                adminService.getVesselTypeStats()));
+    }
+
+    // 최근 예약
+    @GetMapping("/stats/recent-reservations")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>>
+            getRecentReservations(
+            @RequestParam(name = "limit",
+                         defaultValue = "10") int limit) {
+        return ResponseEntity.ok(ApiResponse.ok(
+                adminService.getRecentReservations(limit)));
+    }
+
+    // 선박별 매출 순위
+    @GetMapping("/stats/vessel-ranking")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>>
+            getVesselRanking() {
+        return ResponseEntity.ok(ApiResponse.ok(
+                adminService.getVesselRevenueRanking()));
     }
 }

@@ -46,7 +46,13 @@ public class User {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
+    
+    private String fcmToken;  // FCM 디바이스 토큰
+    // FCM 토큰 업데이트
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+    
     // 생성 메서드 — 일반 회원가입
     public static User createLocal(String email, String password,
                                    String name, String phone) {

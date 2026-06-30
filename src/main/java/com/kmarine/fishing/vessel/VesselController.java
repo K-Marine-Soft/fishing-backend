@@ -7,7 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.kmarine.fishing.schedule.ScheduleResponseDto;
+
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/vessels")
@@ -48,4 +51,14 @@ public class VesselController {
         return ResponseEntity.ok(
                 ApiResponse.ok(vesselService.getMyVessels(userId)));
     }
+    // 예약 가능 날짜 조회 (하위 호환)
+    @GetMapping("/{id}/available-dates")
+    public ResponseEntity<ApiResponse<Map<String, ScheduleResponseDto>>> getAvailableDates(
+            @PathVariable("id") Long id,
+            @RequestParam("year") int year,
+            @RequestParam("month") int month) {
+        return ResponseEntity.ok(
+                ApiResponse.ok(
+                    vesselService.getAvailableDates(id, year, month)));
+    }    
 }

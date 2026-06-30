@@ -5,7 +5,14 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### 민감 정보 절대 커밋 금지
+application-prod.yml
+firebase-service-account.json
+*.env
+.env.local
+
 ### STS ###
+.gitignore
 .apt_generated
 .classpath
 .factorypath

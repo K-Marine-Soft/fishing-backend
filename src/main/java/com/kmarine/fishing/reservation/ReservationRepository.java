@@ -15,6 +15,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     // 선박별 예약 목록 (선주용)
     List<Reservation> findByVesselIdOrderByReservationDateDesc(Long vesselId);
 
+    
     // 특정 날짜 예약 인원 합계 (중복 예약 방지)
     @Query("""
         SELECT COALESCE(SUM(r.passengerCount), 0)

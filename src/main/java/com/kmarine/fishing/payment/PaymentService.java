@@ -1,5 +1,6 @@
 package com.kmarine.fishing.payment;
 
+import com.kmarine.fishing.config.FcmService;
 import com.kmarine.fishing.reservation.Reservation;
 import com.kmarine.fishing.reservation.ReservationRepository;
 import com.kmarine.fishing.reservation.ReservationStatus;
@@ -18,6 +19,8 @@ public class PaymentService {
     private final PaymentRepository     paymentRepository;
     private final ReservationRepository reservationRepository;
     private final PortOneService        portOneService;
+
+    private final FcmService fcmService;
 
     // 결제 검증
     @Transactional
@@ -67,6 +70,31 @@ public class PaymentService {
         log.info("결제 완료 reservationId: {}, impUid: {}",
                 reservation.getId(), request.getImpUid());
 
+     // 결제 검증 메서드 내 예약 확정 후 추가
+        reservation.confirm();
+
+        // 이용자에게 알림
+        if (reservation.getUser().getFcmToken() != null) {
+            fcmService.sendToToken(
+                reservation.getUser().getFcmToken(),
+                "예약 확정 ✅",
+                reservation.getVessel().getName() +
+                " " + reservation.getReservationDate() +
+                " 예약이 확정됐습니다!"
+            );
+        }
+
+        // 선주에게 알림
+        if (reservation.getVessel().getOwner()
+                .getFcmToken() != null) {
+            fcmService.sendToToken(
+                reservation.getVessel().getOwner().getFcmToken(),
+                "새 예약 알림 🚢",
+                reservation.getReservationDate() +
+                " " + reservation.getPassengerCount() +
+                "명 예약이 들어왔습니다!"
+            );
+        }
         return toInfo(payment);
     }
 
@@ -94,6 +122,8 @@ public class PaymentService {
         payment.getReservation().cancel(request.getReason());
 
         log.info("환불 완료 paymentId: {}", payment.getId());
+        
+        
     }
 
     private PaymentResponseDto.Info toInfo(Payment p) {

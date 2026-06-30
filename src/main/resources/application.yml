@@ -1,7 +1,16 @@
 spring:
   application:
     name: fishing-backend
-
+  # AWS S3
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: kmarine-fishing-images
   # PostgreSQL
   datasource:
     url: jdbc:postgresql://localhost:5432/fishing_db
@@ -25,6 +34,11 @@ spring:
     redis:
       host: localhost
       port: 6379
+  # 첨부용량    
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB      
 
   # OAuth2 (나중에 실제 키로 교체)
   security:
@@ -32,14 +46,15 @@ spring:
       client:
         registration:
           kakao:
-            client-id: YOUR_KAKAO_CLIENT_ID
-            client-secret: YOUR_KAKAO_CLIENT_SECRET
+            client-id: ef50c887d9cd82882934c1d5c2806371
+            client-secret: 4hWu1IZLPgsbW2aWxzkpJadY4oGLx7bZ
+            client-authentication-method: client_secret_post # 중요: 이 설정을 꼭 추가하세요
             redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
             authorization-grant-type: authorization_code
-            scope: profile_nickname, account_email
+            scope: profile_nickname #, account_email
           naver:
-            client-id: YOUR_NAVER_CLIENT_ID
-            client-secret: YOUR_NAVER_CLIENT_SECRET
+            client-id: qDfkg0XHeUGFeXUk2pG9
+            client-secret: ffpXIFz9vp
             redirect-uri: "{baseUrl}/login/oauth2/code/naver"
             authorization-grant-type: authorization_code
             scope: name, email
