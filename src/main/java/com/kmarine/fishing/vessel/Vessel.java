@@ -1,5 +1,6 @@
 package com.kmarine.fishing.vessel;
 
+import com.kmarine.fishing.fleet.Fleet;
 import com.kmarine.fishing.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,6 +27,10 @@ public class Vessel {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;                 // 선주
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fleet_id")
+    private Fleet fleet;                // 소속 선단
+    
     @Column(nullable = false)
     private String name;                // 선박명
 
@@ -75,9 +80,10 @@ public class Vessel {
     private LocalDateTime updatedAt;
 
     // 생성 메서드
-    public static Vessel create(User owner, VesselRequestDto.Register request) {
+    public static Vessel create(User owner, Fleet fleet, VesselRequestDto.Register request) {
         Vessel vessel = new Vessel();
         vessel.owner          = owner;
+        vessel.fleet  		  = fleet;          // ← 추가
         vessel.name           = request.getName();
         vessel.type           = request.getType();
         vessel.status         = VesselStatus.PENDING;
@@ -109,5 +115,9 @@ public class Vessel {
         this.maxPassengers  = request.getMaxPassengers();
         this.pricePerPerson = request.getPricePerPerson();
         this.description    = request.getDescription();
+    }
+	// fleet getter 확인용
+    public Long getFleetId() {
+        return fleet != null ? fleet.getId() : null;
     }
 }

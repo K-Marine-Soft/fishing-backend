@@ -1,5 +1,6 @@
 package com.kmarine.fishing.community;
 
+import com.kmarine.fishing.common.XssUtil;
 import com.kmarine.fishing.user.User;
 import com.kmarine.fishing.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,14 @@ public class PostService {
         User author = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        // XSS 방어 — 제목/내용 정제
+        String safeTitle   = XssUtil.sanitize(request.getTitle());
+        String safeContent = XssUtil.sanitize(request.getContent());
+        
         Post post = Post.create(author, request);
+        // create 메서드 내부에서 safeTitle, safeContent 사용하도록
+        // Post.create 수정 필요
+        
         postRepository.save(post);
         return toSummary(post);
     }

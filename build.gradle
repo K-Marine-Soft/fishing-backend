@@ -2,8 +2,13 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.1.0'
 	id 'io.spring.dependency-management' version '1.1.7'
+	//id 'org.owasp.dependencycheck' version '9.0.9'  // ← 추가
 }
-
+/*dependencyCheck {
+	nvd {
+		apiKey ="FB21B7C1-FE74-F111-836F-0EBF96DE670D"
+	}
+}*/
 group = 'com.kmarine'
 version = '0.0.1-SNAPSHOT'
 
@@ -48,7 +53,11 @@ dependencies {
 
     // PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
-
+    
+    // AWS SDK v2 (R2)
+    implementation 'software.amazon.awssdk:s3:2.25.0'
+    implementation 'software.amazon.awssdk:auth:2.25.0'
+    
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -58,6 +67,15 @@ dependencies {
 
     // DevTools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    
+    // Jackson DateTime 지원
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    
+    // 암호화
+    implementation 'org.springframework.security:spring-security-crypto'
+    
+    /// Google Authenticator (2FA)
+    implementation 'com.warrenstrange:googleauth:1.5.0'
     
 	// WebSocket
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'

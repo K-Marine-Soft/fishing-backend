@@ -92,3 +92,12 @@ portone:
   imp-key: 8548545067648712
   imp-secret: oBNLU8tNxPtf8PdkNS3pJTRwxfMJr1ZTpzhtPYTDqbYBhFQCOCrKrBXBRY5coXGogLGQu33K7lX7aonj
   imp-code: imp58138885
+  
+# 공공데이터 API
+ocean:
+  api-key: ${OCEAN_API_KEY:temp-key}
+  base-url: https://www.khoa.go.kr/api/oceangrid
+
+weather:
+  api-key: ${WEATHER_API_KEY:temp-key}
+  base-url: https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0  

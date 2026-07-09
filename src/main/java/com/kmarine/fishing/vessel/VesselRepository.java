@@ -13,7 +13,11 @@ public interface VesselRepository extends JpaRepository<Vessel, Long> {
 
     // 지역별 조회
     List<Vessel> findByRegionAndStatus(String region, VesselStatus status);
+    // 기존 파일에 추가
+    List<Vessel> findByFleetId(Long fleetId);
 
+    List<Vessel> findByFleetIdAndStatus(
+            Long fleetId, VesselStatus status);
     // 선주별 조회
     List<Vessel> findByOwnerId(Long ownerId);
     @Query("""

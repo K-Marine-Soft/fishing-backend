@@ -49,7 +49,7 @@ public class AdminController {
     }
 
     // 정산 생성
-    @PostMapping("/settlements")
+    @PostMapping("/settlements1")
     public ResponseEntity<ApiResponse<AdminResponseDto.SettlementInfo>> createSettlement(
             @Valid @RequestBody AdminRequestDto.CreateSettlement request) {
         return ResponseEntity.ok(
@@ -65,7 +65,7 @@ public class AdminController {
     }
 
     // 정산 목록
-    @GetMapping("/settlements")
+    @GetMapping("/settlements1")
     public ResponseEntity<ApiResponse<List<AdminResponseDto.SettlementInfo>>> getSettlements(
             @RequestParam(name = "status",required = false) SettlementStatus status) {
         return ResponseEntity.ok(

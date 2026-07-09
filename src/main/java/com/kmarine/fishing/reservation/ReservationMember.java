@@ -1,5 +1,7 @@
 package com.kmarine.fishing.reservation;
 
+import com.kmarine.fishing.common.EncryptionConverter;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +21,9 @@ public class ReservationMember {
 
     private String name;        // 탑승자 이름
     private String phone;       // 탑승자 연락처
-    private String idNumber;    // 생년월일 6자리 (신원확인용)
+    
+    @Convert(converter = EncryptionConverter.class)
+    private String idNumber;    // 생년월일 암호화 저장
 
     public static ReservationMember create(Reservation reservation,
                                            String name, String phone,

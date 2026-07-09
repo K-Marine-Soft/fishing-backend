@@ -20,6 +20,7 @@ public class VesselScheduleRequestDto {
         private ScheduleType type;
 
         private String memo;
+        private String fishType;
     }
 
     // 다중 날짜 설정 (휴항 기간 등)
@@ -35,5 +36,6 @@ public class VesselScheduleRequestDto {
         private ScheduleType type;
 
         private String memo;
+        private String fishType;
     }
 }

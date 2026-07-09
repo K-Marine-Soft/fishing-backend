@@ -18,12 +18,18 @@ public class OceanApiService {
     @Value("${ocean.api-key}")
     private String apiKey;
 
-    @Value("${ocean.base-url}")
+    //@Value("${ocean.base-url}")
+    @Value("${ocean.base-url:https://www.khoa.go.kr/api/oceangrid}")
     private String baseUrl;
 
-    private final WebClient webClient = WebClient.builder()
-            .build();
-
+    //private final WebClient webClient = WebClient.builder().build();
+    // ← @RequiredArgsConstructor 제거하고 직접 생성
+    private final WebClient webClient;
+    // 기본 생성자
+    public OceanApiService() {
+        this.webClient = WebClient.builder().build();
+    }
+   
     // 조석 정보 조회 (물때)
     public List<TideInfo> getTideInfo(String obsCode,
                                        LocalDate date) {

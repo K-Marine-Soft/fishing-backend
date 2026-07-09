@@ -36,6 +36,23 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
+            // 보안 헤더 추가
+            .headers(headers -> headers
+                .contentSecurityPolicy(csp -> csp
+                    .policyDirectives(
+                        "default-src 'self'; " +
+                        "img-src 'self' https: data:; " +
+                        "script-src 'self'; " +
+                        "style-src 'self' 'unsafe-inline';"))
+                .frameOptions(frame -> frame.deny())
+                .xssProtection(xss -> xss
+                    .headerValue(org.springframework.security
+                        .web.header.writers.XXssProtectionHeaderWriter
+                        .HeaderValue.ENABLED_MODE_BLOCK))
+            )
+            .sessionManagement(session -> session
+                    .sessionCreationPolicy(
+                        SessionCreationPolicy.STATELESS))           
             .authorizeHttpRequests(auth -> auth
             	.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ← 추가
                 // 인증 없이 접근 가능
@@ -52,7 +69,10 @@ public class SecurityConfig {
                     "/api/posts/**",       // ← 추가
                     "/api/files/upload",     // ← 추가
                     "/api/reviews/vessel/{vesselId}",  // ← 추가
-                    "/api/ocean/**"  // ← 추가
+                    "/api/ocean/**",  // ← 추가
+                    "/api/fleets",
+                    "/api/fleets/subdomain/{subdomain}",
+                    "/api/fleets/domain"                    
                 ).permitAll()
                 // 선주만 접근
                 .requestMatchers("/api/captain/**").hasRole("CAPTAIN")
@@ -83,6 +103,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("http://localhost:19006");
+        config.addAllowedOrigin("https://xxx.vercel.app"); // ← 운영 추가
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setMaxAge(3600L);

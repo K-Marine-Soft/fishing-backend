@@ -18,12 +18,17 @@ public class WeatherApiService {
     @Value("${weather.api-key}")
     private String apiKey;
 
-    @Value("${weather.base-url}")
+    //@Value("${weather.base-url}")
+    @Value("${weather.base-url:https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0}")
     private String baseUrl;
 
-    private final WebClient webClient = WebClient.builder()
-            .build();
+    //private final WebClient webClient = WebClient.builder().build();
+    private final WebClient webClient;
 
+    // 기본 생성자
+    public WeatherApiService() {
+        this.webClient = WebClient.builder().build();
+    }
     // 날씨 정보 조회
     public WeatherInfo getWeather(double latitude,
                                    double longitude) {

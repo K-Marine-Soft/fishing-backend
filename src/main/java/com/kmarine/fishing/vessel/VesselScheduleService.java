@@ -104,7 +104,8 @@ public class VesselScheduleService {
                     vessel,
                     request.getScheduleDate(),
                     request.getType(),
-                    request.getMemo()
+                    request.getMemo(),
+                    request.getFishType()
             );
             scheduleRepository.save(schedule);
         }
@@ -152,7 +153,8 @@ public class VesselScheduleService {
                         VesselSchedule.create(
                                 vessel, date,
                                 request.getType(),
-                                request.getMemo()));
+                                request.getMemo(),
+                                request.getFishType()));
             }
         });
     }

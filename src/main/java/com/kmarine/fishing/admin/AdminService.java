@@ -11,6 +11,8 @@ import com.kmarine.fishing.vessel.VesselRepository;
 import com.kmarine.fishing.vessel.VesselStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -86,6 +88,7 @@ public class AdminService {
     }
 
     // 선박 승인
+    @CacheEvict(value = "vessel", allEntries = true)
     @Transactional
     public void approveVessel(AdminRequestDto.VesselApprove request) {
         Vessel vessel = vesselRepository.findById(request.getVesselId())
@@ -95,6 +98,7 @@ public class AdminService {
     }
 
     // 선박 거절
+    @CacheEvict(value = "vessel", allEntries = true)
     @Transactional
     public void rejectVessel(AdminRequestDto.VesselApprove request) {
         Vessel vessel = vesselRepository.findById(request.getVesselId())
@@ -121,13 +125,15 @@ public class AdminService {
                 .mapToInt(r -> r.getTotalPrice())
                 .sum();
 
-        Settlement settlement = Settlement.create(
+        Settlement settlement = null;
+        /*Settlement.create(
                 vessel,
                 request.getPeriodStart(),
                 request.getPeriodEnd(),
                 totalRevenue,
-                request.getFeeRate()
-        );
+                request.getMonthlyFee(),
+                request.getCommissionRate()
+        );*/
         settlementRepository.save(settlement);
 
         return toSettlementInfo(settlement);
@@ -161,16 +167,16 @@ public class AdminService {
     private AdminResponseDto.SettlementInfo toSettlementInfo(Settlement s) {
         return AdminResponseDto.SettlementInfo.builder()
                 .id(s.getId())
-                .vesselName(s.getVessel().getName())
-                .ownerName(s.getVessel().getOwner().getName())
+//                .vesselName(s.getVessel().getName())
+//                .ownerName(s.getVessel().getOwner().getName())
                 .periodStart(s.getPeriodStart())
                 .periodEnd(s.getPeriodEnd())
                 .totalRevenue(s.getTotalRevenue())
-                .platformFee(s.getPlatformFee())
+//                .platformFee(s.getPlatformFee())
                 .platformFeeAmount(s.getPlatformFeeAmount())
                 .settleAmount(s.getSettleAmount())
                 .status(s.getStatus())
-                .settledAt(s.getSettledAt())
+//                .settledAt(s.getSettledAt())
                 .build();
     }
     

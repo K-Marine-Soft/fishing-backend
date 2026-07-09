@@ -1,5 +1,7 @@
 package com.kmarine.fishing.vessel;
 
+import com.kmarine.fishing.fleet.Fleet;
+import com.kmarine.fishing.fleet.FleetService;
 import com.kmarine.fishing.schedule.ScheduleResponseDto;
 import com.kmarine.fishing.schedule.ScheduleService;
 import com.kmarine.fishing.user.User;
@@ -7,6 +9,9 @@ import com.kmarine.fishing.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.Comparator;
 import java.util.List;
@@ -20,15 +25,20 @@ public class VesselService {
     private final VesselRepository vesselRepository;
     private final UserRepository   userRepository;
     private final ScheduleService  scheduleService;
+    private final FleetService  fleetService;
 
-    // 선박 등록
+    // 선박 등록 시 캐시 무효화
+    //@CacheEvict(value = "vessel", allEntries = true)
+    @CacheEvict(value = "vessel", key = "#p0")
     @Transactional
     public VesselResponseDto.Summary register(Long ownerId,
                                               VesselRequestDto.Register request) {
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        Vessel vessel = Vessel.create(owner, request);
+        
+        String host = "";
+        Fleet fleet = null;//fleetService.getByDomain(host);
+        Vessel vessel = Vessel.create(owner, fleet, request);
 
         // 편의시설 추가
         if (request.getOptions() != null) {
@@ -41,6 +51,9 @@ public class VesselService {
     }
 
     // 선박 상세 조회
+    // 선박 상세 조회에 캐싱
+    //@Cacheable(value = "vessel", key = "#vesselId")
+    @Cacheable(value = "vessel", key = "#p0")  // ← #vesselId 대신 #p0
     @Transactional(readOnly = true)
     public VesselResponseDto.Detail getDetail(Long vesselId) {
         Vessel vessel = vesselRepository.findById(vesselId)
@@ -113,6 +126,12 @@ public class VesselService {
                 .map(this::toSummary)
                 .collect(Collectors.toList());
     }
+    // 선박 수정/승인 시 캐시 무효화
+//    @CacheEvict(value = "vessel", key = "#vesselId")
+//    @Transactional
+//    public void approve(Long vesselId) {
+//        // 기존 승인 로직
+//    }
     /*
     @Transactional(readOnly = true)
     public List<VesselResponseDto.Summary> search(VesselRequestDto.Search request) {

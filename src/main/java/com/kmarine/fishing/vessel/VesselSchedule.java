@@ -36,15 +36,20 @@ public class VesselSchedule {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+	// 기존 VesselSchedule.java에 추가
+    private String fishType;    // 낚시 종류 (감성돔, 볼락 등)
+    
     public static VesselSchedule create(Vessel vessel,
                                          LocalDate date,
                                          ScheduleType type,
-                                         String memo) {
+                                         String memo,
+                                         String fishType) {
         VesselSchedule s = new VesselSchedule();
         s.vessel       = vessel;
         s.scheduleDate = date;
         s.type         = type;
         s.memo         = memo;
+        s.fishType     = fishType;
         return s;
     }
 
