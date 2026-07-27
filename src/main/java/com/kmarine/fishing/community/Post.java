@@ -1,5 +1,6 @@
 package com.kmarine.fishing.community;
 
+import com.kmarine.fishing.fleet.Fleet;
 import com.kmarine.fishing.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,6 +26,10 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fleet_id")
+    private Fleet fleet;            // 게시글이 속한 선단
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -58,9 +63,11 @@ public class Post {
     private LocalDateTime updatedAt;
 
     // 생성 메서드
-    public static Post create(User author, PostRequestDto.Create request) {
+    public static Post create(User author, Fleet fleet,
+                               PostRequestDto.Create request) {
         Post post = new Post();
         post.author        = author;
+        post.fleet          = fleet;
         post.category      = request.getCategory();
         post.title         = request.getTitle();
         post.content       = request.getContent();

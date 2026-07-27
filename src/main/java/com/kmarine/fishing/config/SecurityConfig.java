@@ -56,30 +56,35 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
             	.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ← 추가
                 // 인증 없이 접근 가능
-                .requestMatchers(
-                    "/api/health",
-                    "/api/auth/**",
+                .requestMatchers(HttpMethod.GET,
                     "/api/vessels/search",
                     "/api/vessels/{id}",
                     "/api/vessels/{id}/available-dates",
-                    "/api/vessels/{id}/schedule",
+                    "/api/vessels/{id}/reservation-status",
+                    "/api/vessels/reservation-status",
+                    "/api/vessels/{id}/seats",
+                    "/api/fleets",
+                    "/api/fleets/subdomain/{subdomain}",
+                    "/api/fleets/domain",
+                    "/uploads/**",
+                    "/api/files/download/**"
+                ).permitAll()
+                .requestMatchers(
+               		"/ws/**",       // ← 추가
+                    "/api/health",
+                    "/api/auth/**",
                     "/api/posts",           // ← 추가
                     "/api/posts/search",    // ← 추가
                     "/api/posts/{id}" ,      // ← 추가
                     "/api/posts/**",       // ← 추가
-                    "/api/files/upload",     // ← 추가
                     "/api/reviews/vessel/{vesselId}",  // ← 추가
-                    "/api/ocean/**",  // ← 추가
-                    "/api/fleets",
-                    "/api/fleets/subdomain/{subdomain}",
-                    "/api/fleets/domain"                    
+                    "/api/ocean/**"  // ← 추가
                 ).permitAll()
-                // 선주만 접근
-                .requestMatchers("/api/captain/**").hasRole("CAPTAIN")
+                // 선단 관리자만 접근
+                .requestMatchers("/api/captain/**").hasRole("FLEET_ADMIN")
                 // 관리자만 접근
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/users/me").authenticated()
-                .requestMatchers("/api/users/captain-apply").authenticated()
                 // 나머지는 로그인 필요
                 .anyRequest().authenticated()
             )
@@ -102,15 +107,26 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("http://localhost:19006");
+        // 와일드카드 서브도메인은 addAllowedOrigin(완전일치)이 아니라
+        // addAllowedOriginPattern으로 등록해야 실제로 매칭됩니다.
+        config.addAllowedOriginPattern("http://*.kmarine.com:5173");
+        config.addAllowedOriginPattern("http://*.kmarine.com:3000");
+        config.addAllowedOrigin("http://kmarine.com:5173");     // ← 추가
         config.addAllowedOrigin("https://xxx.vercel.app"); // ← 운영 추가
+        config.addAllowedOrigin("https://fishing-web.vercel.app"); // ← 추가
+        config.addAllowedOrigin("https://fishing-web-xxxx.vercel.app");
+        config.addAllowedOrigin("https://kmarine.com");            // ← 추가
+        config.addAllowedOriginPattern("https://*.kmarine.com");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
+        //source.registerCorsConfiguration("/api/**", config);
+        source.registerCorsConfiguration("/**", config);
         source.registerCorsConfiguration(
                 "/login/oauth2/**", config);        
         return source;

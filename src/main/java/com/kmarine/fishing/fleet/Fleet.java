@@ -1,5 +1,6 @@
 package com.kmarine.fishing.fleet;
 
+import com.kmarine.fishing.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -58,6 +59,15 @@ public class Fleet {
     @Column(nullable = false)
     private FleetStatus status;        // ACTIVE / INACTIVE / PENDING
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requested_by")
+    private User requestedBy;          // 선단 등록을 신청한 사용자 (승인 시 선단관리자로 지정)
+
+    @OneToMany(mappedBy = "fleet",
+               cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
+    private List<FleetImage> images = new ArrayList<>();  // 메인 롤링 배너 이미지
+
     // 메뉴 설정 (JSON)
     @Column(columnDefinition = "TEXT")
     private String menuConfig;
@@ -75,8 +85,10 @@ public class Fleet {
     private LocalDateTime updatedAt;
 
     // 생성 메서드
-    public static Fleet create(FleetRequestDto.Create request) {
+    public static Fleet create(FleetRequestDto.Create request,
+                                User requestedBy) {
         Fleet f = new Fleet();
+        f.requestedBy   = requestedBy;
         f.fleetName     = request.getFleetName();
         f.subdomain     = request.getSubdomain();
         f.customDomain  = request.getCustomDomain();

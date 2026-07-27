@@ -6,7 +6,6 @@ import com.kmarine.fishing.reservation.ReservationRepository;
 import com.kmarine.fishing.reservation.ReservationStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -163,8 +162,7 @@ public class SettlementService {
                 .build();
     }
 
-    // 월별 자동 정산 생성 (매월 1일 자정)
-    @Scheduled(cron = "0 0 0 1 * *")
+    // 월별 자동 정산 생성 — 실행 주기/사용여부는 batch_job_config(MONTHLY_SETTLEMENT)에서 관리 (com.kmarine.fishing.batch.DynamicBatchScheduler)
     @Transactional
     public void autoGenerateMonthlySettlements() {
         log.info("월별 자동 정산 생성 시작");

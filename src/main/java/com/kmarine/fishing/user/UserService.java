@@ -30,24 +30,6 @@ public class UserService {
                 .build();
     }
 
-    // 선주 신청
-    @Transactional
-    public void applyForCaptain(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() ->
-                    new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        if (user.getRole() == UserRole.ROLE_CAPTAIN) {
-            throw new IllegalArgumentException("이미 선주입니다.");
-        }
-        if (user.getRole() == UserRole.ROLE_ADMIN) {
-            throw new IllegalArgumentException(
-                "관리자는 선주 신청이 불가합니다.");
-        }
-
-        user.updateRole(UserRole.ROLE_CAPTAIN);
-        log.info("선주 신청 완료 userId: {}", userId);
-    }
     // FCM 토큰 저장
     @Transactional
     public void updateFcmToken(Long userId, String fcmToken) {

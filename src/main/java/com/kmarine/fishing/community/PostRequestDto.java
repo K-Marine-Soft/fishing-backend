@@ -9,6 +9,9 @@ public class PostRequestDto {
 
     @Getter
     public static class Create {
+        @NotNull(message = "선단 정보가 없습니다")
+        private Long fleetId;
+
         @NotNull(message = "카테고리를 선택해주세요")
         private PostCategory category;
 

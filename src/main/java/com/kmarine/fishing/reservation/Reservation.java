@@ -47,9 +47,17 @@ public class Reservation {
 
     private String cancelReason;        // 취소 사유
 
+    private String depositorName;       // 입금자명 (예약자와 다를 경우)
+
+    private String requestMemo;         // 예약시 전하실 말씀
+
     @OneToMany(mappedBy = "reservation",
                cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReservationMember> members = new ArrayList<>();
+
+    @OneToMany(mappedBy = "reservation",
+               cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReservationSeat> seats = new ArrayList<>();
 
     @CreatedDate
     @Column(updatable = false)
@@ -68,11 +76,24 @@ public class Reservation {
         r.passengerCount  = request.getPassengerCount();
         r.totalPrice      = vessel.getPricePerPerson() * request.getPassengerCount();
         r.status          = ReservationStatus.PENDING;
+        r.depositorName   = request.getDepositorName();
+        r.requestMemo     = request.getRequestMemo();
         return r;
+    }
+
+    // 좌석 배정
+    public void assignSeats(List<Integer> seatNumbers) {
+        seatNumbers.forEach(n -> this.seats.add(ReservationSeat.create(this, n)));
     }
 
     // 예약 확정 (결제 완료 후)
     public void confirm() { this.status = ReservationStatus.CONFIRMED; }
+
+    // 대기 등록
+    public void waitlist() { this.status = ReservationStatus.WAITLISTED; }
+
+    // 대기 → 입금 대기로 승격 (자리가 났을 때)
+    public void promote() { this.status = ReservationStatus.PENDING; }
 
     // 취소
     public void cancel(String reason) {

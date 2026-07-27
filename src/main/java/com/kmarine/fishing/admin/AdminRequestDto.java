@@ -6,14 +6,6 @@ import java.time.LocalDate;
 
 public class AdminRequestDto {
 
-    // 선박 승인/거절
-    @Getter
-    public static class VesselApprove {
-        @NotNull
-        private Long vesselId;
-        private String memo;
-    }
-
     // 정산 생성
     @Getter
     public static class CreateSettlement {

@@ -1,7 +1,8 @@
 package com.kmarine.fishing.admin;
 
 import com.kmarine.fishing.common.ApiResponse;
-import com.kmarine.fishing.vessel.VesselStatus;
+import com.kmarine.fishing.fleet.FleetResponseDto;
+import com.kmarine.fishing.fleet.FleetStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,27 +25,27 @@ public class AdminController {
                 ApiResponse.ok(adminService.getDashboard()));
     }
 
-    // 선박 목록
-    @GetMapping("/vessels")
-    public ResponseEntity<ApiResponse<List<AdminResponseDto.VesselInfo>>> getVessels(
-            @RequestParam(name = "status",required = false) VesselStatus status) {
+    // 선단 등록 신청 목록
+    @GetMapping("/fleets")
+    public ResponseEntity<ApiResponse<List<FleetResponseDto.Info>>> getFleets(
+            @RequestParam(name = "status", required = false) FleetStatus status) {
         return ResponseEntity.ok(
-                ApiResponse.ok(adminService.getVesselList(status)));
+                ApiResponse.ok(adminService.getFleets(status)));
     }
 
-    // 선박 승인
-    @PostMapping("/vessels/approve")
-    public ResponseEntity<ApiResponse<Void>> approveVessel(
-            @Valid @RequestBody AdminRequestDto.VesselApprove request) {
-        adminService.approveVessel(request);
+    // 선단 승인
+    @PostMapping("/fleets/{id}/approve")
+    public ResponseEntity<ApiResponse<Void>> approveFleet(
+            @PathVariable("id") Long id) {
+        adminService.approveFleet(id);
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
-    // 선박 거절
-    @PostMapping("/vessels/reject")
-    public ResponseEntity<ApiResponse<Void>> rejectVessel(
-            @Valid @RequestBody AdminRequestDto.VesselApprove request) {
-        adminService.rejectVessel(request);
+    // 선단 거절
+    @PostMapping("/fleets/{id}/reject")
+    public ResponseEntity<ApiResponse<Void>> rejectFleet(
+            @PathVariable("id") Long id) {
+        adminService.rejectFleet(id);
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
@@ -116,4 +117,32 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(
                 adminService.getVesselRevenueRanking()));
     }
+    
+	/*
+	 * // 선박 목록
+	 * 
+	 * @GetMapping("/vessels") public
+	 * ResponseEntity<ApiResponse<List<AdminResponseDto.VesselInfo>>> getVessels(
+	 * 
+	 * @RequestParam(name = "status",required = false) VesselStatus status) { return
+	 * ResponseEntity.ok( ApiResponse.ok(adminService.getVesselList(status))); }
+	 * 
+	 * // 선박 승인
+	 * 
+	 * @PostMapping("/vessels/approve") public ResponseEntity<ApiResponse<Void>>
+	 * approveVessel(
+	 * 
+	 * @Valid @RequestBody AdminRequestDto.VesselApprove request) {
+	 * adminService.approveVessel(request); return
+	 * ResponseEntity.ok(ApiResponse.ok(null)); }
+	 * 
+	 * // 선박 거절
+	 * 
+	 * @PostMapping("/vessels/reject") public ResponseEntity<ApiResponse<Void>>
+	 * rejectVessel(
+	 * 
+	 * @Valid @RequestBody AdminRequestDto.VesselApprove request) {
+	 * adminService.rejectVessel(request); return
+	 * ResponseEntity.ok(ApiResponse.ok(null)); }
+	 */
 }

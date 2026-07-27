@@ -1,6 +1,13 @@
 spring:
   application:
     name: fishing-backend
+  profiles:
+    active: local   # 로컬 실행 시 application-local.yml(gitignore 대상)에서 실제 시크릿 로드. 배포 환경은 SPRING_PROFILES_ACTIVE=prod 로 덮어씀
+  web:
+    cors:
+      allowed-origins: "http://localhost:5173"
+      allowed-methods: "*"
+      allowed-headers: "*"    
   # AWS S3
   cloud:
     aws:
@@ -14,8 +21,8 @@ spring:
   # PostgreSQL
   datasource:
     url: jdbc:postgresql://localhost:5432/fishing_db
-    username: fishing_user
-    password: fishing1234!
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   # JPA
@@ -46,15 +53,15 @@ spring:
       client:
         registration:
           kakao:
-            client-id: ef50c887d9cd82882934c1d5c2806371
-            client-secret: 4hWu1IZLPgsbW2aWxzkpJadY4oGLx7bZ
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
             client-authentication-method: client_secret_post # 중요: 이 설정을 꼭 추가하세요
             redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
             authorization-grant-type: authorization_code
             scope: profile_nickname #, account_email
           naver:
-            client-id: qDfkg0XHeUGFeXUk2pG9
-            client-secret: ffpXIFz9vp
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
             redirect-uri: "{baseUrl}/login/oauth2/code/naver"
             authorization-grant-type: authorization_code
             scope: name, email
@@ -72,13 +79,18 @@ spring:
 
 # JWT 설정
 jwt:
-  secret: km4r1n3F1sh1ngS3cr3tK3y2024!!SecureKey@fishing
+  secret: ${JWT_SECRET}
   access-expiration: 900000       # 15분 (ms)
   refresh-expiration: 604800000   # 7일 (ms)
 
 # 서버 포트
 server:
   port: 8080
+
+# 첨부파일 로컬 저장 (추후 S3로 교체 가능)
+file:
+  upload-dir: uploads
+  base-url: ${FILE_BASE_URL:http://localhost:8080}
 
 # 로그
 logging:
@@ -89,9 +101,9 @@ logging:
     
 # 포트원
 portone:
-  imp-key: 8548545067648712
-  imp-secret: oBNLU8tNxPtf8PdkNS3pJTRwxfMJr1ZTpzhtPYTDqbYBhFQCOCrKrBXBRY5coXGogLGQu33K7lX7aonj
-  imp-code: imp58138885
+  imp-key: ${PORTONE_IMP_KEY}
+  imp-secret: ${PORTONE_IMP_SECRET}
+  imp-code: ${PORTONE_IMP_CODE}
   
 # 공공데이터 API
 ocean:

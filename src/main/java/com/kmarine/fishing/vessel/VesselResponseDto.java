@@ -45,6 +45,7 @@ public class VesselResponseDto {
         private Double longitude;
         private Integer maxPassengers;
         private Integer pricePerPerson;
+        private String thumbnailUrl;
         private String description;
         private String licenseNumber;
         private Integer buildYear;

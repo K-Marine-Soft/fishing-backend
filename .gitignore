@@ -7,9 +7,13 @@ build/
 
 ### 민감 정보 절대 커밋 금지
 application-prod.yml
+application-local.yml
 firebase-service-account.json
 *.env
 .env.local
+
+### 업로드된 첨부파일 (로컬 저장소)
+/uploads/
 
 ### STS ###
 .gitignore

@@ -66,6 +66,7 @@ public class Vessel {
 
     @OneToMany(mappedBy = "vessel",
                cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
     private List<VesselImage> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "vessel",
@@ -86,7 +87,8 @@ public class Vessel {
         vessel.fleet  		  = fleet;          // ← 추가
         vessel.name           = request.getName();
         vessel.type           = request.getType();
-        vessel.status         = VesselStatus.PENDING;
+        // 선단 관리자가 직접 등록하므로 별도 승인 절차 없이 즉시 승인
+        vessel.status         = VesselStatus.APPROVED;
         vessel.region         = request.getRegion();
         vessel.departurePort  = request.getDeparturePort();
         vessel.latitude       = request.getLatitude();
@@ -110,11 +112,18 @@ public class Vessel {
     // 정보 수정
     public void update(VesselRequestDto.Update request) {
         this.name           = request.getName();
+        this.type           = request.getType();
         this.region         = request.getRegion();
         this.departurePort  = request.getDeparturePort();
+        this.latitude       = request.getLatitude();
+        this.longitude      = request.getLongitude();
         this.maxPassengers  = request.getMaxPassengers();
         this.pricePerPerson = request.getPricePerPerson();
         this.description    = request.getDescription();
+        this.licenseNumber  = request.getLicenseNumber();
+        this.buildYear      = request.getBuildYear();
+        this.vesselLength   = request.getVesselLength();
+        this.enginePower    = request.getEnginePower();
     }
 	// fleet getter 확인용
     public Long getFleetId() {

@@ -1,6 +1,8 @@
 package com.kmarine.fishing.community;
 
 import com.kmarine.fishing.common.XssUtil;
+import com.kmarine.fishing.fleet.Fleet;
+import com.kmarine.fishing.fleet.FleetRepository;
 import com.kmarine.fishing.user.User;
 import com.kmarine.fishing.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class PostService {
     private final PostRepository    postRepository;
     private final CommentRepository commentRepository;
     private final UserRepository    userRepository;
+    private final FleetRepository   fleetRepository;
 
     // 게시글 작성
     @Transactional
@@ -27,40 +30,45 @@ public class PostService {
                                           PostRequestDto.Create request) {
         User author = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Fleet fleet = fleetRepository.findById(request.getFleetId())
+                .orElseThrow(() -> new IllegalArgumentException("선단을 찾을 수 없습니다."));
 
         // XSS 방어 — 제목/내용 정제
         String safeTitle   = XssUtil.sanitize(request.getTitle());
         String safeContent = XssUtil.sanitize(request.getContent());
-        
-        Post post = Post.create(author, request);
+
+        Post post = Post.create(author, fleet, request);
         // create 메서드 내부에서 safeTitle, safeContent 사용하도록
         // Post.create 수정 필요
-        
+
         postRepository.save(post);
         return toSummary(post);
     }
 
     // 게시글 목록
     @Transactional(readOnly = true)
-    public Page<PostResponseDto.Summary> getList(PostCategory category,
+    public Page<PostResponseDto.Summary> getList(Long fleetId,
+                                                  PostCategory category,
                                                   int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Post> posts = category == null
-                ? postRepository.findByDeletedFalseOrderByCreatedAtDesc(pageable)
-                : postRepository.findByCategoryAndDeletedFalseOrderByCreatedAtDesc(
-                        category, pageable);
+                ? postRepository.findByFleet_IdAndDeletedFalseOrderByCreatedAtDesc(
+                        fleetId, pageable)
+                : postRepository.findByFleet_IdAndCategoryAndDeletedFalseOrderByCreatedAtDesc(
+                        fleetId, category, pageable);
 
         return posts.map(this::toSummary);
     }
 
     // 게시글 검색
     @Transactional(readOnly = true)
-    public Page<PostResponseDto.Summary> search(PostCategory category,
+    public Page<PostResponseDto.Summary> search(Long fleetId,
+                                                 PostCategory category,
                                                  String keyword,
                                                  int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return postRepository.search(category, keyword, pageable)
+        return postRepository.search(fleetId, category, keyword, pageable)
                 .map(this::toSummary);
     }
 

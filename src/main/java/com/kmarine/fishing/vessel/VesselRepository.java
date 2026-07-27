@@ -14,9 +14,9 @@ public interface VesselRepository extends JpaRepository<Vessel, Long> {
     // 지역별 조회
     List<Vessel> findByRegionAndStatus(String region, VesselStatus status);
     // 기존 파일에 추가
-    List<Vessel> findByFleetId(Long fleetId);
+    List<Vessel> findByFleet_Id(Long fleetId);
 
-    List<Vessel> findByFleetIdAndStatus(
+    List<Vessel> findByFleet_IdAndStatus(
             Long fleetId, VesselStatus status);
     // 선주별 조회
     List<Vessel> findByOwnerId(Long ownerId);
@@ -24,6 +24,7 @@ public interface VesselRepository extends JpaRepository<Vessel, Long> {
     	    SELECT DISTINCT v FROM Vessel v
     	    LEFT JOIN v.options o
     	    WHERE v.status = 'APPROVED'
+    	    AND (:fleetId   IS NULL OR v.fleet.id = :fleetId)
     	    AND (:region    IS NULL OR v.region = :region)
     	    AND (:type      IS NULL OR v.type   = :type)
     	    AND (:minPass   IS NULL OR v.maxPassengers  >= :minPass)
@@ -33,6 +34,7 @@ public interface VesselRepository extends JpaRepository<Vessel, Long> {
     	    ORDER BY v.createdAt DESC
     	    """)
     	List<Vessel> search(
+    	        @Param("fleetId")  Long fleetId,
     	        @Param("region")   String region,
     	        @Param("type")     VesselType type,
     	        @Param("minPass")  Integer minPass,

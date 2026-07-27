@@ -26,6 +26,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -35,6 +36,9 @@ dependencies {
 	
 	implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.1.1'
 	
+	// 포트원 (아임포트)
+	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
+		
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -79,7 +83,7 @@ dependencies {
     
 	// WebSocket
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

@@ -21,6 +21,12 @@ public class ReservationRequestDto {
         private Integer passengerCount;
 
         private List<MemberInfo> members;   // 탑승자 명단 (선택)
+
+        private List<Integer> seatNumbers;  // 선택 좌석 번호 (선택)
+
+        private String depositorName;       // 입금자명 (예약자와 다를 경우, 선택)
+
+        private String requestMemo;         // 예약시 전하실 말씀 (선택)
     }
 
     @Getter

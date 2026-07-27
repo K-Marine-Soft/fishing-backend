@@ -3,6 +3,7 @@ package com.kmarine.fishing.fleet;
 import lombok.Builder;
 import lombok.Getter;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class FleetResponseDto {
 
@@ -30,6 +31,10 @@ public class FleetResponseDto {
         private String  fareExcludes;
         private FleetStatus status;
         private LocalDateTime createdAt;
+        private Long   requestedById;
+        private String requestedByName;
+        private String requestedByEmail;
+        private List<String> imageUrls;
     }
 
     // 통합 플랫폼용 간략 정보

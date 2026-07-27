@@ -3,6 +3,7 @@ package com.kmarine.fishing.fleet;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import java.util.List;
 
 public class FleetRequestDto {
 
@@ -56,5 +57,6 @@ public class FleetRequestDto {
         private String  fareExcludes;
         private String  departurTime;
         private String  returnTime;
+        private List<String> imageUrls;  // 메인 롤링 배너 이미지
     }
 }

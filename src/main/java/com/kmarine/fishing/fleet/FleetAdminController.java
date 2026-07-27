@@ -58,4 +58,40 @@ public class FleetAdminController {
                 fleetAdminService.registerVessel(
                         userId, request)));
     }
+
+    // 공동관리자 지정 (즉시 적용)
+    @PostMapping("/co-admins")
+    public ResponseEntity<ApiResponse<Void>> designateCoAdmin(
+            @AuthenticationPrincipal Long userId,
+            @RequestBody java.util.Map<String, String> body) {
+        fleetAdminService.designateCoAdmin(userId, body.get("email"));
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    // 공동관리자 신청 목록
+    @GetMapping("/co-admin-applications")
+    public ResponseEntity<ApiResponse
+            <List<FleetAdminApplicationResponseDto>>> getCoAdminApplications(
+            @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(ApiResponse.ok(
+                fleetAdminService.getCoAdminApplications(userId)));
+    }
+
+    // 공동관리자 신청 승인
+    @PostMapping("/co-admin-applications/{id}/approve")
+    public ResponseEntity<ApiResponse<Void>> approveCoAdminApplication(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable("id") Long id) {
+        fleetAdminService.approveCoAdminApplication(userId, id);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    // 공동관리자 신청 거절
+    @PostMapping("/co-admin-applications/{id}/reject")
+    public ResponseEntity<ApiResponse<Void>> rejectCoAdminApplication(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable("id") Long id) {
+        fleetAdminService.rejectCoAdminApplication(userId, id);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
 }

@@ -24,13 +24,6 @@ public class UserController {
                 ApiResponse.ok(userService.getMe(userId)));
     }
 
-    // 선주 신청
-    @PostMapping("/captain-apply")
-    public ResponseEntity<ApiResponse<Void>> applyForCaptain(
-            @AuthenticationPrincipal Long userId) {
-        userService.applyForCaptain(userId);
-        return ResponseEntity.ok(ApiResponse.ok(null));
-    }
     // FCM 토큰 저장
     @PutMapping("/fcm-token")
     public ResponseEntity<ApiResponse<Void>> updateFcmToken(

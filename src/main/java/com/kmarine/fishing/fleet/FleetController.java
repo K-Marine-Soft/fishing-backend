@@ -4,6 +4,7 @@ import com.kmarine.fishing.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,13 +17,14 @@ public class FleetController {
 
     private final FleetService fleetService;
 
-    // 선단 등록
+    // 선단 등록 신청 (로그인 필요, 승인 전까지 PENDING)
     @PostMapping
     public ResponseEntity<ApiResponse<FleetResponseDto.Info>>
-            create(@Valid @RequestBody
+            create(@AuthenticationPrincipal Long userId,
+                   @Valid @RequestBody
                    FleetRequestDto.Create request) {
         return ResponseEntity.ok(ApiResponse.ok(
-                fleetService.create(request)));
+                fleetService.create(userId, request)));
     }
 
     // 서브도메인으로 선단 조회
@@ -60,15 +62,16 @@ public class FleetController {
                 fleetService.update(id, request)));
     }
 
-    // 선단 활성화 (슈퍼 관리자)
-    @PostMapping("/{id}/activate")
-    public ResponseEntity<ApiResponse<Void>> activate(
+    // 기존 선단에 공동관리자로 신청
+    @PostMapping("/{id}/apply-co-admin")
+    public ResponseEntity<ApiResponse<Void>> applyForCoAdmin(
+            @AuthenticationPrincipal Long userId,
             @PathVariable("id") Long id) {
-        fleetService.activate(id);
+        fleetService.applyForCoAdmin(userId, id);
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
-    
- // 선단 10일 예약현황 조회
+
+    // 선단 10일 예약현황 조회
     @GetMapping("/{id}/reservation-status")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>>
             getReservationStatus(

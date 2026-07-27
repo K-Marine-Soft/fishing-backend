@@ -15,6 +15,7 @@ public class AuthResponseDto {
         private String email;
         private String name;
         private String role;
+        private Long fleetId;      // 선단관리자인 경우 소속 선단 id
         private String accessToken;
         private String refreshToken;
     }

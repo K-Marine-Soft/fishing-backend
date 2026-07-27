@@ -1,6 +1,7 @@
 package com.kmarine.fishing.auth;
 
 import com.kmarine.fishing.config.JwtUtil;
+import com.kmarine.fishing.fleet.FleetAdminMappingRepository;
 import com.kmarine.fishing.user.User;
 import com.kmarine.fishing.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class AuthService {
     private final PasswordEncoder   passwordEncoder;
     private final JwtUtil           jwtUtil;
     private final RedisTemplate<String, String> redisTemplate;
+    private final FleetAdminMappingRepository fleetAdminMappingRepository;
 
     // 회원가입
     @Transactional
@@ -111,11 +113,17 @@ public class AuthService {
                 7, TimeUnit.DAYS
         );
 
+        Long fleetId = fleetAdminMappingRepository
+                .findByUserId(user.getId())
+                .map(m -> m.getFleet().getId())
+                .orElse(null);
+
         return AuthResponseDto.TokenInfo.builder()
                 .userId(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .role(user.getRole().name())
+                .fleetId(fleetId)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

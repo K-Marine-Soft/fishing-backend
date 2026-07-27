@@ -32,6 +32,12 @@ public class RateLimitFilter implements Filter {
 
         String path = httpRequest.getRequestURI();
 
+        // 로컬 개발 환경은 속도 제한 제외
+        if (isLocalRequest(httpRequest)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         // 로그인/회원가입은 더 엄격하게 (분당 10회)
         if (path.contains("/api/auth/login")
          || path.contains("/api/auth/signup")) {
@@ -70,6 +76,17 @@ public class RateLimitFilter implements Filter {
                                   TimeUnit.SECONDS);
         }
         return count == null || count <= max;
+    }
+
+    private boolean isLocalRequest(HttpServletRequest request) {
+        // X-Forwarded-For가 없을 때만 (프록시 뒤에서는 실제 클라이언트 IP로 정상 검사)
+        if (request.getHeader("X-Forwarded-For") != null) {
+            return false;
+        }
+        String ip = request.getRemoteAddr();
+        return "127.0.0.1".equals(ip)
+            || "0:0:0:0:0:0:0:1".equals(ip)
+            || "::1".equals(ip);
     }
 
     private String getClientIp(HttpServletRequest request) {

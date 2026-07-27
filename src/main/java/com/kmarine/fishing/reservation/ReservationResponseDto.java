@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ReservationResponseDto {
 
@@ -33,6 +34,9 @@ public class ReservationResponseDto {
         private Integer totalPrice;
         private ReservationStatus status;
         private String cancelReason;
+        private List<Integer> seatNumbers;
+        private String depositorName;
+        private String requestMemo;
         private LocalDateTime createdAt;
     }
 }

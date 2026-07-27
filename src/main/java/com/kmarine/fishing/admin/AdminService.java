@@ -2,6 +2,9 @@ package com.kmarine.fishing.admin;
 
 import com.kmarine.fishing.dailylog.DailyLogRepository;
 import com.kmarine.fishing.expense.ExpenseRepository;
+import com.kmarine.fishing.fleet.FleetResponseDto;
+import com.kmarine.fishing.fleet.FleetService;
+import com.kmarine.fishing.fleet.FleetStatus;
 import com.kmarine.fishing.payment.PaymentRepository;
 import com.kmarine.fishing.reservation.ReservationRepository;
 import com.kmarine.fishing.reservation.ReservationStatus;
@@ -12,7 +15,6 @@ import com.kmarine.fishing.vessel.VesselStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,28 @@ public class AdminService {
 
     private final ExpenseRepository     expenseRepository;
     private final DailyLogRepository    dailyLogRepository;
-    
+    private final FleetService          fleetService;
+
+    // 선단 등록 신청 목록
+    @Transactional(readOnly = true)
+    public List<FleetResponseDto.Info> getFleets(FleetStatus status) {
+        return fleetService.getFleetsByStatus(status);
+    }
+
+    // 선단 승인
+    @Transactional
+    public void approveFleet(Long fleetId) {
+        fleetService.activate(fleetId);
+        log.info("선단 승인 fleetId: {}", fleetId);
+    }
+
+    // 선단 거절
+    @Transactional
+    public void rejectFleet(Long fleetId) {
+        fleetService.reject(fleetId);
+        log.info("선단 거절 fleetId: {}", fleetId);
+    }
+
     // 대시보드
     @Transactional(readOnly = true)
     public AdminResponseDto.Dashboard getDashboard() {
@@ -67,45 +90,6 @@ public class AdminService {
                 .build();
     }
 
-    // 선박 목록 (관리자용)
-    @Transactional(readOnly = true)
-    public List<AdminResponseDto.VesselInfo> getVesselList(VesselStatus status) {
-        List<Vessel> vessels = status == null
-                ? vesselRepository.findAll()
-                : vesselRepository.findByStatus(status);
-
-        return vessels.stream()
-                .map(v -> AdminResponseDto.VesselInfo.builder()
-                        .id(v.getId())
-                        .name(v.getName())
-                        .ownerName(v.getOwner().getName())
-                        .ownerEmail(v.getOwner().getEmail())
-                        .region(v.getRegion())
-                        .status(v.getStatus())
-                        .createdAt(v.getCreatedAt())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    // 선박 승인
-    @CacheEvict(value = "vessel", allEntries = true)
-    @Transactional
-    public void approveVessel(AdminRequestDto.VesselApprove request) {
-        Vessel vessel = vesselRepository.findById(request.getVesselId())
-                .orElseThrow(() -> new IllegalArgumentException("선박을 찾을 수 없습니다."));
-        vessel.approve();
-        log.info("선박 승인 vesselId: {}", vessel.getId());
-    }
-
-    // 선박 거절
-    @CacheEvict(value = "vessel", allEntries = true)
-    @Transactional
-    public void rejectVessel(AdminRequestDto.VesselApprove request) {
-        Vessel vessel = vesselRepository.findById(request.getVesselId())
-                .orElseThrow(() -> new IllegalArgumentException("선박을 찾을 수 없습니다."));
-        vessel.reject();
-        log.info("선박 거절 vesselId: {}", vessel.getId());
-    }
 
     // 정산 생성
     @Transactional

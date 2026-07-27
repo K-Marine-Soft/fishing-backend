@@ -1,5 +1,6 @@
 package com.kmarine.fishing.config;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
@@ -14,6 +15,11 @@ public class FcmService {
     public void sendToToken(String token,
                              String title,
                              String body) {
+        // Firebase 미설정 시 스킵
+        if (FirebaseApp.getApps().isEmpty()) {
+            log.warn("FCM 미설정 → 알림 스킵");
+            return;
+        }
         try {
             Message message = Message.builder()
                     .setToken(token)
