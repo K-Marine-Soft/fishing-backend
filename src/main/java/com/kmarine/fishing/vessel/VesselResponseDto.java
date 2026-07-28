@@ -41,6 +41,7 @@ public class VesselResponseDto {
         private VesselStatus status;
         private String region;
         private String departurePort;
+        private String fleetSubdomain;
         private Double latitude;
         private Double longitude;
         private Integer maxPassengers;

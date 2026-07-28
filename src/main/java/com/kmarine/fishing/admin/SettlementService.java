@@ -33,12 +33,20 @@ public class SettlementService {
                     new IllegalArgumentException(
                         "선단을 찾을 수 없습니다."));
 
+        Settlement settlement = createSettlement(
+                fleet, request.getPeriodStart(), request.getPeriodEnd());
+
+        return toInfo(settlement);
+    }
+
+    // 정산 생성 공통 로직 (수동/자동 배치 공용) — 기간 내 매출 집계 후 정산 레코드 생성
+    private Settlement createSettlement(
+            Fleet fleet, LocalDate periodStart, LocalDate periodEnd) {
+
         // 중복 정산 방지
         Long existing = settlementRepository
                 .countByFleetAndPeriod(
-                    fleet.getId(),
-                    request.getPeriodStart(),
-                    request.getPeriodEnd());
+                    fleet.getId(), periodStart, periodEnd);
         if (existing > 0) {
             throw new IllegalArgumentException(
                 "이미 해당 기간 정산이 존재합니다.");
@@ -55,16 +63,16 @@ public class SettlementService {
                     && r.getVessel().getFleet().getId()
                         .equals(fleet.getId()))
                 .filter(r -> !r.getReservationDate()
-                        .isBefore(request.getPeriodStart())
+                        .isBefore(periodStart)
                     && !r.getReservationDate()
-                        .isAfter(request.getPeriodEnd()))
+                        .isAfter(periodEnd))
                 .mapToInt(r -> r.getTotalPrice())
                 .sum();
 
         Settlement settlement = Settlement.create(
                 fleet,
-                request.getPeriodStart(),
-                request.getPeriodEnd(),
+                periodStart,
+                periodEnd,
                 totalRevenue,
                 fleet.getMonthlyFee() != null
                     ? fleet.getMonthlyFee() : 0,
@@ -74,11 +82,9 @@ public class SettlementService {
 
         settlementRepository.save(settlement);
         log.info("정산 생성: 선단={} 기간={} ~ {}",
-                 fleet.getFleetName(),
-                 request.getPeriodStart(),
-                 request.getPeriodEnd());
+                 fleet.getFleetName(), periodStart, periodEnd);
 
-        return toInfo(settlement);
+        return settlement;
     }
 
     // 정산 완료 처리
@@ -176,26 +182,26 @@ public class SettlementService {
                 .findByStatus(
                     com.kmarine.fishing.fleet.FleetStatus.ACTIVE);
 
+        int created = 0;
         for (Fleet fleet : activeFleets) {
             try {
                 Long existing = settlementRepository
                         .countByFleetAndPeriod(
                             fleet.getId(), start, end);
-                if (existing > 0) continue;
+                if (existing > 0) {
+                    log.info("자동 정산 건너뜀(이미 존재): 선단={}",
+                             fleet.getFleetName());
+                    continue;
+                }
 
-                SettlementRequestDto.Generate req =
-                        new SettlementRequestDto.Generate();
-                // 리플렉션 없이 직접 생성하는 경우
-                // 별도 메서드 호출
-
-                log.info("자동 정산 생성: 선단={}",
-                         fleet.getFleetName());
+                createSettlement(fleet, start, end);
+                created++;
             } catch (Exception e) {
                 log.error("자동 정산 실패 선단={}: {}",
                           fleet.getFleetName(), e.getMessage());
             }
         }
-        log.info("월별 자동 정산 생성 완료");
+        log.info("월별 자동 정산 생성 완료: {}건 생성", created);
     }
 
     // 변환 메서드

@@ -95,6 +95,8 @@ public class VesselService {
                 .status(vessel.getStatus())
                 .region(vessel.getRegion())
                 .departurePort(vessel.getDeparturePort())
+                .fleetSubdomain(vessel.getFleet() != null
+                        ? vessel.getFleet().getSubdomain() : null)
                 .latitude(vessel.getLatitude())
                 .longitude(vessel.getLongitude())
                 .maxPassengers(vessel.getMaxPassengers())

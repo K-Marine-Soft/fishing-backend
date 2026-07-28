@@ -2,8 +2,6 @@ package com.kmarine.fishing.admin;
 
 import lombok.Builder;
 import lombok.Getter;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class AdminResponseDto {
 
@@ -19,20 +17,4 @@ public class AdminResponseDto {
         private Long pendingSettlements;// 정산 대기
     }
 
-    // 정산 정보
-    @Getter
-    @Builder
-    public static class SettlementInfo {
-        private Long id;
-        private String vesselName;
-        private String ownerName;
-        private LocalDate periodStart;
-        private LocalDate periodEnd;
-        private Integer totalRevenue;
-        private Integer platformFee;
-        private Integer platformFeeAmount;
-        private Integer settleAmount;
-        private SettlementStatus status;
-        private LocalDateTime settledAt;
-    }
 }

@@ -3,7 +3,6 @@ package com.kmarine.fishing.admin;
 import com.kmarine.fishing.common.ApiResponse;
 import com.kmarine.fishing.fleet.FleetResponseDto;
 import com.kmarine.fishing.fleet.FleetStatus;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,32 +48,7 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
-    // 정산 생성
-    @PostMapping("/settlements1")
-    public ResponseEntity<ApiResponse<AdminResponseDto.SettlementInfo>> createSettlement(
-            @Valid @RequestBody AdminRequestDto.CreateSettlement request) {
-        return ResponseEntity.ok(
-                ApiResponse.ok(adminService.createSettlement(request)));
-    }
-
-    // 정산 완료
-    @PostMapping("/settlements/complete")
-    public ResponseEntity<ApiResponse<Void>> completeSettlement(
-            @Valid @RequestBody AdminRequestDto.CompleteSettlement request) {
-        adminService.completeSettlement(request);
-        return ResponseEntity.ok(ApiResponse.ok(null));
-    }
-
-    // 정산 목록
-    @GetMapping("/settlements1")
-    public ResponseEntity<ApiResponse<List<AdminResponseDto.SettlementInfo>>> getSettlements(
-            @RequestParam(name = "status",required = false) SettlementStatus status) {
-        return ResponseEntity.ok(
-                ApiResponse.ok(adminService.getSettlements(status)));
-    }
-    
-    
- // 월별 매출 통계
+    // 월별 매출 통계
     @GetMapping("/stats/monthly")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>>
             getMonthlySales(
@@ -117,32 +91,4 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(
                 adminService.getVesselRevenueRanking()));
     }
-    
-	/*
-	 * // 선박 목록
-	 * 
-	 * @GetMapping("/vessels") public
-	 * ResponseEntity<ApiResponse<List<AdminResponseDto.VesselInfo>>> getVessels(
-	 * 
-	 * @RequestParam(name = "status",required = false) VesselStatus status) { return
-	 * ResponseEntity.ok( ApiResponse.ok(adminService.getVesselList(status))); }
-	 * 
-	 * // 선박 승인
-	 * 
-	 * @PostMapping("/vessels/approve") public ResponseEntity<ApiResponse<Void>>
-	 * approveVessel(
-	 * 
-	 * @Valid @RequestBody AdminRequestDto.VesselApprove request) {
-	 * adminService.approveVessel(request); return
-	 * ResponseEntity.ok(ApiResponse.ok(null)); }
-	 * 
-	 * // 선박 거절
-	 * 
-	 * @PostMapping("/vessels/reject") public ResponseEntity<ApiResponse<Void>>
-	 * rejectVessel(
-	 * 
-	 * @Valid @RequestBody AdminRequestDto.VesselApprove request) {
-	 * adminService.rejectVessel(request); return
-	 * ResponseEntity.ok(ApiResponse.ok(null)); }
-	 */
 }
